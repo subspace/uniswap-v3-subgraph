@@ -9,7 +9,20 @@ export class StaticTokenDefinition {
 
   // Get all tokens with a static defintion
   static getStaticDefinitions(): Array<StaticTokenDefinition> {
-    const staticDefinitions: Array<StaticTokenDefinition> = []
+    const staticDefinitions: Array<StaticTokenDefinition> = [
+      {
+        address: Address.fromString('0x82af49447d8a07e3bd95bd0d56f35241523fbab1'),
+        symbol: 'WETH',
+        name: 'Wrapped Ethereum',
+        decimals: BigInt.fromI32(18)
+      },
+      {
+        address: Address.fromString('0xff970a61a04b1ca14834a43f5de4533ebddb5cc8'),
+        symbol: 'USDC',
+        name: 'USD Coin',
+        decimals: BigInt.fromI32(6)
+      }
+    ]
     return staticDefinitions
   }
 
