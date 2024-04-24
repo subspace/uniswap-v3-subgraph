@@ -14,8 +14,6 @@ const USDC_ADDRESS = '0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e'
 const USDT_E_ADDRESS = '0xc7198437980c041c805a1edcba50c1ce5db95118'
 const USDT_ADDRESS = '0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7'
 
-const USDC_ADDRESS = '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913'
-
 // token where amounts should contribute to tracked volume and liquidity
 // usually tokens that many tokens are paired with s
 export const WHITELIST_TOKENS: string[] = [
@@ -45,11 +43,7 @@ export function sqrtPriceX96ToTokenPrices(sqrtPriceX96: BigInt, token0: Token, t
 
 export function getEthPriceInUSD(): BigDecimal {
   // fetch eth prices for each stablecoin
-<<<<<<< HEAD
-  const usdcPool = Pool.load(USDC_WETH_05_POOL) // usdc is token1
-=======
   const usdcPool = Pool.load(WAVAX_USDC_05_POOL) // usdc is token1
->>>>>>> f32fb32 (update network to avax)
   if (usdcPool !== null) {
     return usdcPool.token1Price
   } else {
