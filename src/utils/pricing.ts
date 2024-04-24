@@ -11,8 +11,6 @@ const USDC_ADDRESS = '0xff970a61a04b1ca14834a43f5de4533ebddb5cc8'
 const DAI_ADDRESS = '0xda10009cbd5d07dd0cecc66161fc93d7c9000da1'
 const USDT_ADDRESS = '0xfd086bc7cd5c481dcc9c85ebe478a1c0b69fcbb9'
 
-const USDC_ADDRESS = '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913'
-
 // token where amounts should contribute to tracked volume and liquidity
 // usually tokens that many tokens are paired with s
 export const WHITELIST_TOKENS: string[] = [WETH_ADDRESS, USDC_ADDRESS, DAI_ADDRESS, USDT_ADDRESS]
