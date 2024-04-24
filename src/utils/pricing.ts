@@ -4,24 +4,33 @@ import { exponentToBigDecimal, safeDiv } from '../utils/index'
 import { Bundle, Pool, Token } from './../types/schema'
 import { ONE_BD, ZERO_BD, ZERO_BI } from './constants'
 
-const WETH_ADDRESS = '0x4200000000000000000000000000000000000006'
-const USDC_WETH_05_POOL = '0x4c36388be6f416a29c8d8eee81c771ce6be14b18'
+// todo: use a wmatic pool? check which has more liq first
+const WETH_ADDRESS = '0x7ceb23fd6bc0add59e62ac25578270cff1b9f619'
+const USDC_WETH_03_POOL = '0x0e44ceb592acfc5d3f09d996302eb4c499ff8c10'
 
-const USDC_ADDRESS = '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913'
+const USDC_ADDRESS = '0x2791bca1f2de4661ed88a30c99a7a9449aa84174'
+const DAI_ADDRESS = '0x8f3cf7ad23cd3cadbd9735aff958023239c6a063'
 
 // token where amounts should contribute to tracked volume and liquidity
-// usually tokens that many tokens are paired with s
-export const WHITELIST_TOKENS: string[] = [WETH_ADDRESS, USDC_ADDRESS]
+// usually tokens that many tokens are paired with
+export const WHITELIST_TOKENS: string[] = [
+  WETH_ADDRESS,
+  USDC_ADDRESS,
+  DAI_ADDRESS,
+  '0x0d500b1d8e8ef31e21c99d1db9a6444d3adf1270' // WMATIC
+]
 
-const STABLE_COINS: string[] = [USDC_ADDRESS]
-
-const MINIMUM_ETH_LOCKED = BigDecimal.fromString('1')
+const STABLE_COINS: string[] = [USDC_ADDRESS, DAI_ADDRESS]
+const MINIMUM_ETH_LOCKED = BigDecimal.fromString('5')
 
 const Q192 = BigInt.fromI32(2).pow(192 as u8)
 export function sqrtPriceX96ToTokenPrices(sqrtPriceX96: BigInt, token0: Token, token1: Token): BigDecimal[] {
   const num = sqrtPriceX96.times(sqrtPriceX96).toBigDecimal()
   const denom = BigDecimal.fromString(Q192.toString())
-  const price1 = num.div(denom).times(exponentToBigDecimal(token0.decimals)).div(exponentToBigDecimal(token1.decimals))
+  const price1 = num
+    .div(denom)
+    .times(exponentToBigDecimal(token0.decimals))
+    .div(exponentToBigDecimal(token1.decimals))
 
   const price0 = safeDiv(BigDecimal.fromString('1'), price1)
   return [price0, price1]
@@ -29,9 +38,9 @@ export function sqrtPriceX96ToTokenPrices(sqrtPriceX96: BigInt, token0: Token, t
 
 export function getEthPriceInUSD(): BigDecimal {
   // fetch eth prices for each stablecoin
-  const usdcPool = Pool.load(USDC_WETH_05_POOL) // usdc is token1
+  const usdcPool = Pool.load(USDC_WETH_03_POOL) // usdc is token 0
   if (usdcPool !== null) {
-    return usdcPool.token1Price
+    return usdcPool.token0Price
   } else {
     return ZERO_BD
   }
