@@ -4,38 +4,40 @@ import { exponentToBigDecimal, safeDiv } from '../utils/index'
 import { Bundle, Pool, Token } from './../types/schema'
 import { ONE_BD, ZERO_BD, ZERO_BI } from './constants'
 
-const WAVAX_ADDRESS = '0xb31f66aa3c1e785363f0875a1b74e27b85fd66c7'
-const WAVAX_USDC_05_POOL = '0xfae3f424a0a47706811521e3ee268f00cfb5c45e'
+const CELO_NATIVE_ADDRESS = '0x471ece3750da237f93b8e339c536989b8978a438'
+const CUSD_CELO_POOL_ADDRESS = '0x2d70cbabf4d8e61d5317b62cbe912935fd94e0fe'
 
-const DAI_E_ADDRESS = '0xd586e7f844cea2f87f50152665bcbc2c279d8d70'
-const DAI_ADDRESS = '0xba7deebbfc5fa1100fb055a87773e1e99cd3507a'
-const USDC_E_ADDRESS = '0xa7d7079b0fead91f3e65f86e8915cb59c1a4c664'
-const USDC_ADDRESS = '0xb97ef9ef8734c71904d8002f8b6bc66dd9c48a6e'
-const USDT_E_ADDRESS = '0xc7198437980c041c805a1edcba50c1ce5db95118'
-const USDT_ADDRESS = '0x9702230a8ea53601f5cd2dc00fdbc13d4df4a8c7'
+const CUSD_ADDRESS = '0x765de816845861e75a25fca122bb6898b8b1282a'
+const BRIDGED_USDC_ADDRESS = '0xef4229c8c3250c675f21bcefa42f58efbff6002a'
+const NATIVE_USDC_ADDRESS = '0xceba9300f2b948710d2653dd7b07f33a8b32118c'
 
 // token where amounts should contribute to tracked volume and liquidity
-// usually tokens that many tokens are paired with s
-export const WHITELIST_TOKENS: string[] = [
-  WAVAX_ADDRESS,
-  DAI_E_ADDRESS,
-  DAI_ADDRESS,
-  USDC_E_ADDRESS,
-  USDC_ADDRESS,
-  USDT_E_ADDRESS,
-  USDT_ADDRESS,
-  '0x130966628846bfd36ff31a822705796e8cb8c18d' // mim
+// usually tokens that many tokens are paired with
+export let WHITELIST_TOKENS: string[] = [
+  CELO_NATIVE_ADDRESS,
+  CUSD_ADDRESS,
+  BRIDGED_USDC_ADDRESS,
+  NATIVE_USDC_ADDRESS,
+  '0xd8763cba276a3738e6de85b4b3bf5fded6d6ca73', // CEUR
+  '0xe8537a3d056da446677b9e9d6c5db704eaab4787', // CREAL
+  '0x46c9757c5497c5b1f2eb73ae79b6b67d119b0b58', // PACT
+  '0x17700282592d6917f6a73d0bf8accf4d578c131e', // MOO
+  '0x66803fb87abd4aac3cbb3fad7c3aa01f6f3fb207', // Portal Eth
+  '0xbaab46e28388d2779e6e31fd00cf0e5ad95e327b' // WBTC
 ]
 
-const STABLE_COINS: string[] = [DAI_E_ADDRESS, DAI_ADDRESS, USDC_E_ADDRESS, USDC_ADDRESS, USDT_E_ADDRESS, USDT_ADDRESS]
+const STABLE_COINS: string[] = [CUSD_ADDRESS, BRIDGED_USDC_ADDRESS, NATIVE_USDC_ADDRESS]
 
-const MINIMUM_ETH_LOCKED = BigDecimal.fromString('1000')
+const MINIMUM_ETH_LOCKED = BigDecimal.fromString('60')
 
 const Q192 = BigInt.fromI32(2).pow(192 as u8)
 export function sqrtPriceX96ToTokenPrices(sqrtPriceX96: BigInt, token0: Token, token1: Token): BigDecimal[] {
   const num = sqrtPriceX96.times(sqrtPriceX96).toBigDecimal()
   const denom = BigDecimal.fromString(Q192.toString())
-  const price1 = num.div(denom).times(exponentToBigDecimal(token0.decimals)).div(exponentToBigDecimal(token1.decimals))
+  const price1 = num
+    .div(denom)
+    .times(exponentToBigDecimal(token0.decimals))
+    .div(exponentToBigDecimal(token1.decimals))
 
   const price0 = safeDiv(BigDecimal.fromString('1'), price1)
   return [price0, price1]
@@ -43,9 +45,9 @@ export function sqrtPriceX96ToTokenPrices(sqrtPriceX96: BigInt, token0: Token, t
 
 export function getEthPriceInUSD(): BigDecimal {
   // fetch eth prices for each stablecoin
-  const usdcPool = Pool.load(WAVAX_USDC_05_POOL) // usdc is token1
-  if (usdcPool !== null) {
-    return usdcPool.token1Price
+  const cusdPool = Pool.load(CUSD_CELO_POOL_ADDRESS) // cusd is token1
+  if (cusdPool !== null) {
+    return cusdPool.token1Price
   } else {
     return ZERO_BD
   }
@@ -56,7 +58,7 @@ export function getEthPriceInUSD(): BigDecimal {
  * @todo update to be derived ETH (add stablecoin estimates)
  **/
 export function findEthPerToken(token: Token): BigDecimal {
-  if (token.id == WAVAX_ADDRESS) {
+  if (token.id == CELO_NATIVE_ADDRESS) {
     return ONE_BD
   }
   const whiteList = token.whitelistPools
