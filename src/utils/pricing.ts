@@ -5,17 +5,30 @@ import { Bundle, Pool, Token } from './../types/schema'
 import { ONE_BD, ZERO_BD, ZERO_BI } from './constants'
 
 const WETH_ADDRESS = '0x4200000000000000000000000000000000000006'
-const USDC_WETH_05_POOL = '0x4c36388be6f416a29c8d8eee81c771ce6be14b18'
+const DAI_WETH_03_POOL = '0x03af20bdaaffb4cc0a521796a223f7d85e2aac31'
+
+const DAI_ADDRESS = '0xda10009cbd5d07dd0cecc66161fc93d7c9000da1' // DAI
+const USDC_ADDRESS = '0x7f5c764cbc14f9669b88837ca1490cca17c31607' // USDC
+const USDT_ADDRESS = '0x94b008aa00579c1307b0ef2c499ad98a8ce58e58' // USDT
 
 const USDC_ADDRESS = '0x833589fcd6edb6e08f4c7c32d4f71b54bda02913'
 
 // token where amounts should contribute to tracked volume and liquidity
-// usually tokens that many tokens are paired with s
-export const WHITELIST_TOKENS: string[] = [WETH_ADDRESS, USDC_ADDRESS]
+// usually tokens that many tokens are paired with
+export const WHITELIST_TOKENS: string[] = [
+  WETH_ADDRESS, // WETH,
+  DAI_ADDRESS,
+  USDC_ADDRESS,
+  USDT_ADDRESS,
+  '0x4200000000000000000000000000000000000042', // OP
+  '0x9e1028f5f1d5ede59748ffcee5532509976840e0', // PERP
+  '0x50c5725949a6f0c72e6c4a641f24049a917db0cb', // LYRA
+  '0x68f180fcce6836688e9084f035309e29bf0a2095' // WBTC
+]
 
-const STABLE_COINS: string[] = [USDC_ADDRESS]
+const STABLE_COINS: string[] = [DAI_ADDRESS, USDC_ADDRESS, USDT_ADDRESS]
 
-const MINIMUM_ETH_LOCKED = BigDecimal.fromString('1')
+const MINIMUM_ETH_LOCKED = BigDecimal.fromString('10')
 
 const Q192 = BigInt.fromI32(2).pow(192 as u8)
 export function sqrtPriceX96ToTokenPrices(sqrtPriceX96: BigInt, token0: Token, token1: Token): BigDecimal[] {
@@ -32,9 +45,9 @@ export function sqrtPriceX96ToTokenPrices(sqrtPriceX96: BigInt, token0: Token, t
 
 export function getEthPriceInUSD(): BigDecimal {
   // fetch eth prices for each stablecoin
-  const usdcPool = Pool.load(USDC_WETH_05_POOL) // usdc is token1
-  if (usdcPool !== null) {
-    return usdcPool.token1Price
+  const daiPool = Pool.load(DAI_WETH_03_POOL) // dai is token1
+  if (daiPool !== null) {
+    return daiPool.token1Price
   } else {
     return ZERO_BD
   }
